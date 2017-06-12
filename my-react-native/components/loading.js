@@ -1,4 +1,3 @@
-import Expo from 'expo';
 import React from 'react';
 import { Text } from 'react-native';
 
@@ -22,8 +21,8 @@ export class Loading extends React.Component {
 
 	componentDidMount() {
 		let stopper = this.originalText + '...';
-		this.interval = setInterval(function() {
-			
+
+		this.interval = setInterval (() => {
 			if (this.interval === stopper) {
 				this.setState({
 					text: this.originalText
@@ -35,8 +34,7 @@ export class Loading extends React.Component {
 					text: this.state.text + '.'
 				})
 			}
-
-		}.bind(this), this.props.speed)
+		}, this.props.speed)
 	}
 
 	componentWillUnmount() {

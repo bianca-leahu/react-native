@@ -1,4 +1,3 @@
-import Expo from 'expo';
 import React from 'react';
 import { Text, View } from 'react-native';
 import { GetItems } from '../containers/items'

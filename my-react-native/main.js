@@ -1,7 +1,7 @@
 import Expo from 'expo';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Main } from './components/products';
+import { Main } from './components/Products';
 
 class App extends React.Component {
   render() {

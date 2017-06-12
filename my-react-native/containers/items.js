@@ -1,9 +1,8 @@
-import Expo from 'expo';
 import React from 'react';
 import { StyleSheet, Text, View, FlatList, Image, Button} from 'react-native';
-import { getFormattedDate } from './date-format';
-import { renderIf } from './renderIf';
-import { Loading } from '../components/loading';
+import { getFormattedDate } from '../helpers/date-format';
+import { renderIf } from '../helpers/renderIf';
+import { Loading } from '../components/Loading';
 
 
 export class GetItems extends React.Component {
@@ -45,6 +44,7 @@ export class GetItems extends React.Component {
             .done(() => {
         });
     }
+
 
     findDataLength() {
         fetch('http://localhost:3000/api/products').then((response) => response.json())
