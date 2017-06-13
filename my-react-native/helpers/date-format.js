@@ -1,4 +1,4 @@
-export function getFormattedDate(datetime) {
+export default function getFormattedDate(datetime) {
 
     // need to replace "-" with "/" so that Safari recognizes it
     const date = typeof datetime === 'string' ? new Date(datetime.replace(/-/g, '/')) : new Date(datetime),

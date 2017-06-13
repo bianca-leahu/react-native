@@ -1,49 +1,25 @@
-import React from 'react';
-import { StyleSheet, Text, View, FlatList, Image, Button} from 'react-native';
-import { getFormattedDate } from '../helpers/date-format';
-import { renderIf } from '../helpers/renderIf';
-import { Loading } from '../components/Loading';
+import React, { PureComponent } from 'react';
+import { Text, View, FlatList } from 'react-native';
+import renderIf from '../helpers/renderIf';
+import Loading from '../components/Loading';
+import Item from '../components/Item';
+import SortButtons from '../components/Sort-buttons';
 
 
-export class GetItems extends React.Component {
-	constructor(props) {
-		super(props);
+export default class GetItems extends PureComponent {
+	
 
-		this.state = {
-			faces: [],
-            price: null,
-            size: null,
-            id: null,
-            isLoading: true,
-            dataLength: null
-		};
-	}
+	state = {
+		faces: [],
+        isLoading: true,
+        dataLength: null,
+        sort: 'id'
+	};
 
 
 	componentDidMount() {
-		this.showInitialData();
-        this.findDataLength();
+        this.loadData();
 	}
-
-
-    loadUnsortedData() {
-        let i = this.state.faces.length / 20,
-            index = i + 1,
-            url;
-        this.setState({
-            isLoading: true
-        });
-
-        fetch('http://localhost:3000/api/products?_page=' + index + '&_limit=20').then((response) => response.json())
-            .then((res) => {
-                this.setState({
-                    faces: this.state.faces.concat(res),
-                    isLoading: false
-                });
-            })
-            .done(() => {
-        });
-    }
 
 
     findDataLength() {
@@ -53,220 +29,102 @@ export class GetItems extends React.Component {
                     dataLength: res.length,
                 });
             })
-            .done(() => {
-        });
+            .catch(() => {
+            });
     }
 
 
-  	showInitialData() {
-  		fetch('http://localhost:3000/api/products?_page=1&_limit=20')
-    		.then((response) => response.json())
-     		.then((res) => {
-             	this.setState({
+    loadData() {
+        this.setState({
+            isLoading: true
+        });
+
+        fetch('http://localhost:3000/api/products?_sort=' + this.state.sort + '&_page=1&_limit=20')
+        .then((response) => response.json())
+            .then((res) => {
+                 this.setState({
                     faces: res,
                     isLoading: false
                 });   
-     		})
-     		.done(() => {
-		});
-  	}
+            })
+            .catch(() => {
+            });
+    }
 
 
-    sortPrice() {
+    paginateData = () => {
+        let i = this.state.faces.length / 20,
+            index = i + 1;
+
         this.setState({
-                faces: [],
-                id: false,
-                size: false,
-                isLoading: true
-                
-            })
-        fetch('http://localhost:3000/api/products?_sort=price&_page=1&_limit=20')
+            isLoading: true
+        });
+
+        fetch('http://localhost:3000/api/products?_sort=' + this.state.sort + '&_page=' + index + '&_limit=20')
         .then((response) => response.json())
-            .then((res) => {
-                this.setState({
-                    faces: res,
-                    price: true,
+             .then((res) => {
+                 this.setState({
+                    faces: this.state.faces.concat(res),
                     isLoading: false
-                })
-            })
-            .done(() => {
+                });   
+             })
+             .done(() => {
         });
     }
+
+    addPriceParam = () => {
+        this.setState({
+            sort: 'price',
+            faces: []
+        });
+
+        this.loadData();
+    }
+
+
+    addSizeParam = () => {
+        this.setState({
+            sort: 'size',
+            faces: []
+        });
+
+        this.loadData();
+    }
+
+    renderItem = ({ item }) => {
+        return (
+            <Item
+                face={item.face}
+                size={item.size}
+                price={item.price}
+                date={item.date}
+            />
+        )
+    }
+
+    keyExtractor = (item) => item.id
 
     
-
-    sortSize() {
-        this.setState({
-                faces: [],
-                id: false,
-                price: false,
-                isLoading: true
-            })
-        fetch('http://localhost:3000/api/products?_sort=size&_page=1&_limit=20')
-        .then((response) => response.json())
-            .then((res) => {
-                this.setState({
-                    faces: res,
-                    size: true,
-                    isLoading: false
-                })
-            })
-            .done(() => {
-        });
-    }
-
-    sortId() {
-        this.setState({
-                faces: [],
-                price: false,
-                size: false,
-                isLoading: true
-            })
-        fetch('http://localhost:3000/api/products?_sort=id&_page=1&_limit=20')
-        .then((response) => response.json())
-            .then((res) => {
-                this.setState({
-                    faces: res,
-                    id: true,
-                    isLoading: false
-                })
-            })
-            .done(() => {
-        });
-    }
-
-    loadIdSorted() {
-        let i = this.state.faces.length / 20,
-            index = i + 1;
-
-        this.setState ({
-            isLoading: true
-        });
-
-        fetch('http:localhost:3000/api/products?_sort=id&_page=' + index + '&_limit=20').then((response) => response.json())
-            .then((res) => {
-                this.setState({
-                    faces: this.state.faces.concat(res),
-                    isLoading: false
-                });
-            })
-            .done(() => {
-        });
-    }
-
-    loadPriceSorted() {
-        let i = this.state.faces.length / 20,
-            index = i + 1;
-
-        this.setState ({
-            isLoading: true
-        });
-
-        fetch('http:localhost:3000/api/products?_sort=price&_page=' + index + '&_limit=20').then((response) => response.json())
-            .then((res) => {
-                this.setState({
-                    faces: this.state.faces.concat(res),
-                    isLoading: false
-                });  
-            })
-            .done(() => {
-        });
-    }
-
-    loadSizeSorted() {
-        let i = this.state.faces.length / 20,
-            index = i + 1;
-
-        this.setState ({
-            isLoading: true
-        });
-
-        fetch('http:localhost:3000/api/products?_sort=size&_page=' + index + '&_limit=20').then((response) => response.json())
-            .then((res) => {
-                this.setState({
-                    faces: this.state.faces.concat(res),
-                    isLoading: false
-                });  
-            })
-            .done(() => {
-        });
-    }
-
-
     displayItems() {
         return (
-            <View style={{paddingBottom: 0}}>
-                <View style={{flexWrap: 'wrap', 
-                    flexDirection:'column'}} >
+            <View>
+            
+                <SortButtons 
+                    getPriceParam={this.addPriceParam}
+                    getSizeParam={this.addSizeParam}
+                />
 
-                    <Button
-                      onPress={() => this.sortPrice()}
-                      title="Price Filter"
-                      color="lightblue"
-                      accessibilityLabel="Price Filter"
-                    />
-
-                    <Button
-                      onPress={() => this.sortSize()}
-                      title="Size Filter"
-                      color="lightblue"
-                      accessibilityLabel="Size Filter"
-                    />
-
-                    <Button
-                      onPress={() => this.sortId()}
-                      title="ID Filter"
-                      color="lightblue"
-                      accessibilityLabel="ID Filter"
-                    />
-
-                </View>
                 <FlatList
-                    style={{marginBottom: -60}}
                     onEndReachedThreshold={0}
-                    keyExtractor={(item, index) => item.id}
-                    onEndReached={ () => {
-                            if (this.state.price) { 
-                                this.loadPriceSorted()
-                            }
-                            else if (this.state.size) {
-                                this.loadSizeSorted()
-                            }
-                            else if (this.state.id) {
-                                this.loadIdSorted()
-                            }
-                            else {
-                                this.loadUnsortedData()
-                            }
-                        }
-                    }
+                    keyExtractor={this.keyExtractor}
+                    onEndReached={this.paginateData}
                     data={this.state.faces}
-                    renderItem={({ item }) => (
-                        <View style={{
-                            flex: 1,
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            margin: 5,
-                            backgroundColor: 'lightblue',
-                            borderRadius: 6,
-                            padding: 10,
-                        }}>
-                           
-                                <Text>{this.index}</Text>
-                                <Text style={style.faceItem}>{item.face}</Text>
-                                <Text style={style.priceItem}>Price: ${(item.price / 100).toFixed( 2 )}</Text>
-                                <Text>Size: {item.size}px</Text>
-                                <Text>ID: {item.id}</Text>
-                                <Text>Added: {getFormattedDate(item.date)}</Text>
-                        </View>
-
-
-                )}
+                    renderItem={this.renderItem}
             />
             </View>
         );
     }
+
 
     render() {
         return (
@@ -279,27 +137,7 @@ export class GetItems extends React.Component {
                 {renderIf(this.state.faces.length === this.state.dataLength, 
                     <Text style={{textAlign: 'center'}}>~ end of catalogue ~</Text>
                 )}
-            </View>
-            
-            
+            </View>  
         )
     }
 }
-
-const style = StyleSheet.create({
-	listContainer: {
-    	display: 'flex',
-    	flexWrap: 'wrap'
-    },
-    adds: {
-    	display: 'none'
-    },
-    priceItem: {
-    	fontSize: 20
-    },
-    faceItem: {
-    	marginTop: 25,
-    	marginBottom: 25,
-    	display: 'block'
-    }
-});

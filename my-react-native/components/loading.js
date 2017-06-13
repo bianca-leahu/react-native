@@ -1,31 +1,25 @@
 import React from 'react';
 import { Text } from 'react-native';
 
-export class Loading extends React.Component {
+export default class Loading extends React.Component {
 
   	static defaultProps = {
       	text: 'Loading',
       	speed: 600
   	}
 
-	constructor(props) {
-		super(props);
-
-		this.originalText = this.props.text;
-
-		this.state = {
-			text: this.originalText,
-			speed: 600
-		};
-	}
+	state = {
+		text: this.props.text,
+		speed: 600
+	};
 
 	componentDidMount() {
-		let stopper = this.originalText + '...';
+		let stopper = this.props.text + '...';
 
 		this.interval = setInterval (() => {
 			if (this.interval === stopper) {
 				this.setState({
-					text: this.originalText
+					text: this.this.props.text
 				})
 			}
 

@@ -1,4 +1,4 @@
-export function renderIf(condition, content) {
+export default function renderIf(condition, content) {
     if (condition) {
         return content;
     } else {
