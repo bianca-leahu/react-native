@@ -1,14 +1,15 @@
 import Expo from 'expo';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Main from './components/Products';
+import GetItems from './containers/items'
 
 class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
         
-        <Main />
+        <Text style={styles.header}>Products List</Text>
+        <GetItems />
       </View>
     );
   }
@@ -19,9 +20,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     marginTop: 50,
-    marginBottom: 50,
-    paddingBottom: 250
+    paddingBottom: 210
   },
+  header: {
+    fontSize: 20,
+    textAlign: 'center'
+  }
 });
 
 Expo.registerRootComponent(App);

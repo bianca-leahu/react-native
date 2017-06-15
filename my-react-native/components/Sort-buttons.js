@@ -3,8 +3,7 @@ import React from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
 
 SortButtons.propTypes = {
-    getPriceParam: PropTypes.func.isRequired,
-    getSizeParam: PropTypes.func.isRequired
+    onSort: PropTypes.func.isRequired,
 };
 
 export default function SortButtons(props) {
@@ -12,14 +11,14 @@ export default function SortButtons(props) {
         <View style={style.buttons} >
 
             <Button
-                onPress={props.getPriceParam}
+                onPress={() => props.onSort('price')}
                 title="Price Filter"
                 color="lightblue"
                 accessibilityLabel="Price Filter"
             />
 
             <Button
-                onPress={props.getSizeParam}
+                onPress={() => props.onSort('size')}
                 title="Size Filter"
                 color="lightblue"
                 accessibilityLabel="Size Filter"
@@ -28,6 +27,7 @@ export default function SortButtons(props) {
         </View>
 	);
 }
+
 
 const style = StyleSheet.create({
 	buttons: {

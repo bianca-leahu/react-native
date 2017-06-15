@@ -7,89 +7,47 @@ import SortButtons from '../components/Sort-buttons';
 
 
 export default class GetItems extends PureComponent {
-	
 
 	state = {
 		faces: [],
         isLoading: true,
         dataLength: null,
         sort: 'id'
-	};
+	}
 
 
 	componentDidMount() {
+        this.currentPage = 1;
         this.loadData();
 	}
 
 
-    findDataLength() {
-        fetch('http://localhost:3000/api/products').then((response) => response.json())
-            .then((res) => {
-                this.setState({
-                    dataLength: res.length,
-                });
-            })
-            .catch(() => {
-            });
-    }
+    async loadData() {
+        try {
+            const response = await fetch('http://localhost:3000/api/products?_sort=' + this.state.sort + '&_page=' + this.currentPage + '&_limit=20');
+            const res = await response.json();
 
-
-    loadData() {
-        this.setState({
-            isLoading: true
-        });
-
-        fetch('http://localhost:3000/api/products?_sort=' + this.state.sort + '&_page=1&_limit=20')
-        .then((response) => response.json())
-            .then((res) => {
-                 this.setState({
-                    faces: res,
-                    isLoading: false
-                });   
-            })
-            .catch(() => {
-            });
+            this.setState({
+                faces: this.state.faces.concat(res),
+                isLoading: false
+            }); 
+        }
+        catch (err) {
+            console.log('fetch failed', err);
+        }
     }
 
 
     paginateData = () => {
-        let i = this.state.faces.length / 20,
-            index = i + 1;
 
         this.setState({
             isLoading: true
         });
 
-        fetch('http://localhost:3000/api/products?_sort=' + this.state.sort + '&_page=' + index + '&_limit=20')
-        .then((response) => response.json())
-             .then((res) => {
-                 this.setState({
-                    faces: this.state.faces.concat(res),
-                    isLoading: false
-                });   
-             })
-             .done(() => {
-        });
-    }
-
-    addPriceParam = () => {
-        this.setState({
-            sort: 'price',
-            faces: []
-        });
-
+        this.currentPage++;
         this.loadData();
     }
 
-
-    addSizeParam = () => {
-        this.setState({
-            sort: 'size',
-            faces: []
-        });
-
-        this.loadData();
-    }
 
     renderItem = ({ item }) => {
         return (
@@ -102,6 +60,17 @@ export default class GetItems extends PureComponent {
         )
     }
 
+
+    handleSort = (value) => {
+        this.currentPage = 1;
+
+        this.setState({
+            faces: [],
+            sort: value
+        }, () => this.loadData());
+    }
+
+
     keyExtractor = (item) => item.id
 
     
@@ -110,8 +79,7 @@ export default class GetItems extends PureComponent {
             <View>
             
                 <SortButtons 
-                    getPriceParam={this.addPriceParam}
-                    getSizeParam={this.addSizeParam}
+                    onSort={this.handleSort}
                 />
 
                 <FlatList
@@ -134,7 +102,7 @@ export default class GetItems extends PureComponent {
                 {renderIf(this.state.isLoading, 
                     <Loading />
                 )}
-                {renderIf(this.state.faces.length === this.state.dataLength, 
+                {renderIf(this.state.faces.length === 0, 
                     <Text style={{textAlign: 'center'}}>~ end of catalogue ~</Text>
                 )}
             </View>  
